@@ -1,0 +1,22 @@
+Source: xbmc-audioencoder-vorbis
+Priority: extra
+Maintainer: Arne Morten Kvarving <spiff@xbmc.org>
+Build-Depends: debhelper (>= 8.0.0), cmake, xbmc-addon-dev, automake, autoconf, libtool, libvorbis-dev
+Standards-Version: 3.9.2
+Section: libs
+Homepage: http://xbmc.org
+
+Package: xbmc-audioencoder-vorbis
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Vorbis audio encoder for XBMC
+ Vorbis audio encoder for XBMC
+
+Package: xbmc-audioencoder-vorbis-dbg
+Section: debug
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: debug symbols for Vorbis audio encoder for XBMC
+ debug symbols for Vorbis audio encoder for XBMC
+
