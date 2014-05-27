@@ -27,6 +27,7 @@
 
 extern "C" {
 
+// settings (global)
 int preset=-1;
 int bitrate=0;
 
@@ -119,215 +120,246 @@ void ADDON_Announce(const char *flag, const char *sender, const char *message, c
 {
 }
 
-vorbis_info m_sVorbisInfo; /* struct that stores all the static vorbis bitstream settings */
-vorbis_dsp_state m_sVorbisDspState; /* central working state for the packet->PCM decoder */
-vorbis_block m_sVorbisBlock; /* local working space for packet->PCM decode */
-vorbis_comment m_sVorbisComment;
+static const int OGG_BLOCK_FRAMES = 1024; // number of frames to encode at a time
 
-ogg_stream_state m_sOggStreamState; /* take physical pages, weld into a logical stream of packets */
-ogg_page m_sOggPage; /* one Ogg bitstream page.  Vorbis packets are inside */
-ogg_packet m_sOggPacket; /* one raw packet of data for decode */
+class ogg_context
+{
+public:
+  ogg_context(audioenc_callbacks &cb, vorbis_info &info) :
+    callbacks(cb),
+    vorbisInfo(info),
+    inited(false)
+  {
+  };
 
-uint8_t* m_pBuffer;
-bool first;
+  audioenc_callbacks callbacks;              ///< callbacks to write/seek etc.
 
-bool Init(int iInChannels, int iInRate, int iInBits,
+  vorbis_info        vorbisInfo;             ///< struct that stores all the static vorbis bitstream settings
+  vorbis_dsp_state   vorbisDspState;         ///< central working state for the packet->PCM decoder
+  vorbis_block       vorbisBlock;            ///< local working space for packet->PCM decode
+
+  ogg_stream_state   oggStreamState;         ///< take physical pages, weld into a logical stream of packets
+
+  bool               inited;                 ///< whether Init() was successful
+};
+
+void *Create(audioenc_callbacks *callbacks)
+{
+  if (callbacks && callbacks->write && callbacks->seek)
+  {
+    // create encoder context
+    vorbis_info info;
+    vorbis_info_init(&info);
+
+    return new ogg_context(*callbacks, info);
+  }
+  return NULL;
+}
+
+bool Start(void *ctx, int iInChannels, int iInRate, int iInBits,
           const char* title, const char* artist,
           const char* albumartist, const char* album,
           const char* year, const char* track, const char* genre,
           const char* comment, int iTrackLength)
 {
-  // we only accept 2 / 44100 / 16 atm
-  if (iInChannels != 2 || iInRate != 44100 || iInBits != 16) return false;
+  ogg_context *context = (ogg_context *)ctx;
+  if (!context || !context->callbacks.write)
+    return false;
 
-  vorbis_info_init(&m_sVorbisInfo);
+  // we accept only 2 / 44100 / 16 atm
+  if (iInChannels != 2 || iInRate != 44100 || iInBits != 16)
+    return false;
+
   if (preset == -1)
-    vorbis_encode_init(&m_sVorbisInfo, iInChannels, iInRate, -1, bitrate*1000, -1);
+    vorbis_encode_init(&context->vorbisInfo, iInChannels, iInRate, -1, bitrate*1000, -1);
   else
-    vorbis_encode_init_vbr(&m_sVorbisInfo, iInChannels, iInRate, double(preset)/10.0);
+    vorbis_encode_init_vbr(&context->vorbisInfo, iInChannels, iInRate, double(preset)/10.0);
 
   /* add a comment */
-  vorbis_comment_init(&m_sVorbisComment);
-  vorbis_comment_add_tag(&m_sVorbisComment, (char*)"comment", (char*)comment);
-  vorbis_comment_add_tag(&m_sVorbisComment, (char*)"artist", (char*)artist);
-  vorbis_comment_add_tag(&m_sVorbisComment, (char*)"title", (char*)title);
-  vorbis_comment_add_tag(&m_sVorbisComment, (char*)"album", (char*)album);
-  vorbis_comment_add_tag(&m_sVorbisComment, (char*)"albumartist", (char*)albumartist);
-  vorbis_comment_add_tag(&m_sVorbisComment, (char*)"genre", (char*)genre);
-  vorbis_comment_add_tag(&m_sVorbisComment, (char*)"tracknumber", (char*)track);
-  vorbis_comment_add_tag(&m_sVorbisComment, (char*)"date", (char*)year);
+  vorbis_comment comm;
+  vorbis_comment_init(&comm);
+  vorbis_comment_add_tag(&comm, (char*)"comment", (char*)comment);
+  vorbis_comment_add_tag(&comm, (char*)"artist", (char*)artist);
+  vorbis_comment_add_tag(&comm, (char*)"title", (char*)title);
+  vorbis_comment_add_tag(&comm, (char*)"album", (char*)album);
+  vorbis_comment_add_tag(&comm, (char*)"albumartist", (char*)albumartist);
+  vorbis_comment_add_tag(&comm, (char*)"genre", (char*)genre);
+  vorbis_comment_add_tag(&comm, (char*)"tracknumber", (char*)track);
+  vorbis_comment_add_tag(&comm, (char*)"date", (char*)year);
 
   /* set up the analysis state and auxiliary encoding storage */
-  vorbis_analysis_init(&m_sVorbisDspState, &m_sVorbisInfo);
+  vorbis_analysis_init(&context->vorbisDspState, &context->vorbisInfo);
 
-  vorbis_block_init(&m_sVorbisDspState, &m_sVorbisBlock);
+  vorbis_block_init(&context->vorbisDspState, &context->vorbisBlock);
 
   /* set up our packet->stream encoder */
   /* pick a random serial number; that way we can more likely build
   chained streams just by concatenation */
   srand(time(NULL));
-  ogg_stream_init(&m_sOggStreamState, rand());
+  ogg_stream_init(&context->oggStreamState, rand());
 
-  m_pBuffer = new uint8_t[4096];
+  /* write out the metadata */
+  ogg_packet header;
+  ogg_packet header_comm;
+  ogg_packet header_code;
+  ogg_page   page;
 
-  first = true;
+  vorbis_analysis_headerout(&context->vorbisDspState, &comm,
+                            &header, &header_comm, &header_code);
 
+  ogg_stream_packetin(&context->oggStreamState, &header);
+  ogg_stream_packetin(&context->oggStreamState, &header_comm);
+  ogg_stream_packetin(&context->oggStreamState, &header_code);
+
+  while (1)
+  {
+    /* This ensures the actual
+     * audio data will start on a new page, as per spec
+     */
+    int result = ogg_stream_flush(&context->oggStreamState, &page);
+    if (result == 0)
+      break;
+    context->callbacks.write(context->callbacks.opaque, page.header, page.header_len);
+    context->callbacks.write(context->callbacks.opaque, page.body, page.body_len);
+  }
+  vorbis_comment_clear(&comm);
+
+  context->inited = true;
   return true;
 }
 
-int Encode(int nNumBytesRead, uint8_t* pbtStream, uint8_t* buffer)
+int Encode(void *ctx, int nNumBytesRead, uint8_t* pbtStream)
 {
-  uint8_t* sbuffer = buffer;
-  if (first)
-  {
-    ogg_packet header;
-    ogg_packet header_comm;
-    ogg_packet header_code;
+  ogg_context *context = (ogg_context *)ctx;
+  if (!context || !context->callbacks.write)
+    return -1;
 
-    vorbis_analysis_headerout(&m_sVorbisDspState, &m_sVorbisComment,
-                              &header, &header_comm, &header_code);
-
-    ogg_stream_packetin(&m_sOggStreamState, &header);
-    ogg_stream_packetin(&m_sOggStreamState, &header_comm);
-    ogg_stream_packetin(&m_sOggStreamState, &header_code);
-
-    /* This ensures the actual
-    * audio data will start on a new page, as per spec
-    */
-    while (1)
-    {
-      int result = ogg_stream_flush(&m_sOggStreamState, &m_sOggPage);
-      if (result == 0)
-        break;
-      memcpy(buffer, m_sOggPage.header, m_sOggPage.header_len);
-      buffer += m_sOggPage.header_len;
-      memcpy(buffer, m_sOggPage.body, m_sOggPage.body_len);
-      buffer += m_sOggPage.body_len;
-    }
-    first = false;
-  }
   int eos = 0;
 
   /* data to encode */
-  int nBlocks = (int)(nNumBytesRead / 4096);
-  int nBytesleft = nNumBytesRead - nBlocks * 4096;
-  int block = 4096;
+  const size_t data_size = OGG_BLOCK_FRAMES * (2*2); // assumes 2 channel, 16 bit
+  int nBlocks = (int)(nNumBytesRead / data_size);
+  int nBytesleft = nNumBytesRead - nBlocks * data_size;
+  int block_size = data_size;
 
   for (int a = 0; a <= nBlocks; a++)
   {
     if (a == nBlocks)
     {
       // no more blocks of 4096 bytes to write, just write the last bytes
-      block = nBytesleft;
+      block_size = nBytesleft;
     }
 
     /* expose the buffer to submit data */
-    float **buffer2 = vorbis_analysis_buffer(&m_sVorbisDspState, 1024);
+    float **buffer = vorbis_analysis_buffer(&context->vorbisDspState, OGG_BLOCK_FRAMES);
 
     /* uninterleave samples */
-    memcpy(m_pBuffer, pbtStream, block);
-    pbtStream += 4096;
-    int iSamples = block / (2 * 2);
-    signed char* buf = (signed char*) m_pBuffer;
+    signed char* buf = (signed char*) pbtStream;
+    int iSamples = block_size / (2*2); // assumes 16bit 2ch
     for (int i = 0; i < iSamples; i++)
     {
-      int j = i << 2; // j = i * 4
-      buffer2[0][i] = (((long)buf[j + 1] << 8) | (0x00ff & (int)buf[j])) / 32768.0f;
-      buffer2[1][i] = (((long)buf[j + 3] << 8) | (0x00ff & (int)buf[j + 2])) / 32768.0f;
+      int j = i << 2; // j = i * (2*2)
+      buffer[0][i] = (((long)buf[j + 1] << 8) | (0x00ff & (int)buf[j])) / 32768.0f;
+      buffer[1][i] = (((long)buf[j + 3] << 8) | (0x00ff & (int)buf[j + 2])) / 32768.0f;
     }
+    pbtStream += block_size;
 
     /* tell the library how much we actually submitted */
-    vorbis_analysis_wrote(&m_sVorbisDspState, iSamples);
+    vorbis_analysis_wrote(&context->vorbisDspState, iSamples);
 
     /* vorbis does some data preanalysis, then divvies up blocks for
     more involved (potentially parallel) processing.  Get a single
     block for encoding now */
-    while (vorbis_analysis_blockout(&m_sVorbisDspState, &m_sVorbisBlock) == 1)
+    while (vorbis_analysis_blockout(&context->vorbisDspState, &context->vorbisBlock) == 1)
     {
       /* analysis, assume we want to use bitrate management */
-      vorbis_analysis(&m_sVorbisBlock, NULL);
-      vorbis_bitrate_addblock(&m_sVorbisBlock);
+      vorbis_analysis(&context->vorbisBlock, NULL);
+      vorbis_bitrate_addblock(&context->vorbisBlock);
 
-      while (vorbis_bitrate_flushpacket(&m_sVorbisDspState, &m_sOggPacket))
+      ogg_packet packet;
+      ogg_page   page;
+      while (vorbis_bitrate_flushpacket(&context->vorbisDspState, &packet))
       {
         /* weld the packet into the bitstream */
-        ogg_stream_packetin(&m_sOggStreamState, &m_sOggPacket);
+        ogg_stream_packetin(&context->oggStreamState, &packet);
 
         /* write out pages (if any) */
         while (!eos)
         {
-          int result = ogg_stream_pageout(&m_sOggStreamState, &m_sOggPage);
+          int result = ogg_stream_pageout(&context->oggStreamState, &page);
           if (result == 0)
             break;
-          memcpy(buffer, m_sOggPage.header, m_sOggPage.header_len);
-          buffer += m_sOggPage.header_len;
-          memcpy(buffer, m_sOggPage.body, m_sOggPage.body_len);
-          buffer += m_sOggPage.body_len;
+          context->callbacks.write(context->callbacks.opaque, page.header, page.header_len);
+          context->callbacks.write(context->callbacks.opaque, page.body, page.body_len);
 
           /* this could be set above, but for illustrative purposes, I do
           it here (to show that vorbis does know where the stream ends) */
-          if (ogg_page_eos(&m_sOggPage)) eos = 1;
+          if (ogg_page_eos(&page)) eos = 1;
         }
       }
     }
   }
 
-  return buffer-sbuffer;
+  // consumed everything
+  return nNumBytesRead;
 }
 
-int Flush(uint8_t* buffer)
+bool Finish(void *ctx)
 {
+  ogg_context *context = (ogg_context *)ctx;
+  if (!context || !context->callbacks.write)
+    return false;
+
   int eos = 0;
   // tell vorbis we are encoding the end of the stream
-  vorbis_analysis_wrote(&m_sVorbisDspState, 0);
-  uint8_t* sbuffer = buffer;
-  while (vorbis_analysis_blockout(&m_sVorbisDspState, &m_sVorbisBlock) == 1)
+  vorbis_analysis_wrote(&context->vorbisDspState, 0);
+  while (vorbis_analysis_blockout(&context->vorbisDspState, &context->vorbisBlock) == 1)
   {
     /* analysis, assume we want to use bitrate management */
-    vorbis_analysis(&m_sVorbisBlock, NULL);
-    vorbis_bitrate_addblock(&m_sVorbisBlock);
+    vorbis_analysis(&context->vorbisBlock, NULL);
+    vorbis_bitrate_addblock(&context->vorbisBlock);
 
-    while (vorbis_bitrate_flushpacket(&m_sVorbisDspState, &m_sOggPacket))
+    ogg_packet packet;
+    ogg_page   page;
+    while (vorbis_bitrate_flushpacket(&context->vorbisDspState, &packet))
     {
       /* weld the packet into the bitstream */
-      ogg_stream_packetin(&m_sOggStreamState, &m_sOggPacket);
+      ogg_stream_packetin(&context->oggStreamState, &packet);
 
       /* write out pages (if any) */
       while (!eos)
       {
-        int result = ogg_stream_pageout(&m_sOggStreamState, &m_sOggPage);
+        int result = ogg_stream_pageout(&context->oggStreamState, &page);
         if (result == 0)
           break;
-        memcpy(buffer, m_sOggPage.header, m_sOggPage.header_len);
-        buffer += m_sOggPage.header_len;
-        memcpy(buffer, m_sOggPage.body, m_sOggPage.body_len);
-        buffer += m_sOggPage.body_len;
+        context->callbacks.write(context->callbacks.opaque, page.header, page.header_len);
+        context->callbacks.write(context->callbacks.opaque, page.body, page.body_len);
 
         /* this could be set above, but for illustrative purposes, I do
         it here (to show that vorbis does know where the stream ends) */
-        if (ogg_page_eos(&m_sOggPage)) eos = 1;
+        if (ogg_page_eos(&page)) eos = 1;
       }
     }
   }
-
-  return buffer-sbuffer;
+  return true;
 }
 
-bool Close(const char* File)
+void Free(void *ctx)
 {
+  ogg_context *context = (ogg_context *)ctx;
+  if (!context)
+    return;
+
   /* clean up and exit.  vorbis_info_clear() must be called last */
-  ogg_stream_clear(&m_sOggStreamState);
-  vorbis_block_clear(&m_sVorbisBlock);
-  vorbis_dsp_clear(&m_sVorbisDspState);
-  vorbis_comment_clear(&m_sVorbisComment);
-  vorbis_info_clear(&m_sVorbisInfo);
+  if (context->inited)
+  {
+    ogg_stream_clear(&context->oggStreamState);
+    vorbis_block_clear(&context->vorbisBlock);
+    vorbis_dsp_clear(&context->vorbisDspState);
+  }
+  vorbis_info_clear(&context->vorbisInfo);
 
-  /* ogg_page and ogg_packet structs always point to storage in
-     libvorbis.  They're never freed or manipulated directly */
-  delete []m_pBuffer;
-  m_pBuffer = NULL;
-
-  return true;
+  return;
 }
 
 }
