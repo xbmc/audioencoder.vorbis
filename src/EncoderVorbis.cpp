@@ -100,15 +100,19 @@ ADDON_STATUS ADDON_SetSetting(const char *strSetting, const void* value)
 {
   if (strcmp(strSetting,"preset") == 0)
   {
-    if (strcmp((const char*)value,"0") == 0)
+    int ival = *((int*)value);
+    if (ival == 0)
       preset = 4;
-    if (strcmp((const char*)value,"1") == 0)
+    else if (ival == 1)
       preset = 5;
-    if (strcmp((const char*)value,"2") == 0)
+    else if (ival == 2)
       preset = 7;
   }
   if (strcmp(strSetting,"bitrate") == 0)
-    bitrate = 128+32*atoi((const char*)value);
+  {
+    int ival = *((int*)value);
+    bitrate = 128 + 32 * ival;
+  }
 
   return ADDON_STATUS_OK;
 }
