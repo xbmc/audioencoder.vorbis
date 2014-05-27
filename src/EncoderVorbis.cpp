@@ -24,6 +24,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <time.h>
+#include <algorithm>
 
 extern "C" {
 
@@ -166,8 +167,8 @@ bool Start(void *ctx, int iInChannels, int iInRate, int iInBits,
   if (!context || !context->callbacks.write)
     return false;
 
-  // we accept only 2 / 44100 / 16 atm
-  if (iInChannels != 2 || iInRate != 44100 || iInBits != 16)
+  // we accept only 2 ch 16bit atm
+  if (iInChannels != 2 || iInBits != 16)
     return false;
 
   if (preset == -1)
@@ -236,36 +237,30 @@ int Encode(void *ctx, int nNumBytesRead, uint8_t* pbtStream)
 
   int eos = 0;
 
-  /* data to encode */
-  const size_t data_size = OGG_BLOCK_FRAMES * (2*2); // assumes 2 channel, 16 bit
-  int nBlocks = (int)(nNumBytesRead / data_size);
-  int nBytesleft = nNumBytesRead - nBlocks * data_size;
-  int block_size = data_size;
-
-  for (int a = 0; a <= nBlocks; a++)
+  int bytes_left = nNumBytesRead;
+  while (bytes_left)
   {
-    if (a == nBlocks)
-    {
-      // no more blocks of 4096 bytes to write, just write the last bytes
-      block_size = nBytesleft;
-    }
+    const int channels = 2;
+    const int bits_per_channel = 16;
 
-    /* expose the buffer to submit data */
     float **buffer = vorbis_analysis_buffer(&context->vorbisDspState, OGG_BLOCK_FRAMES);
 
     /* uninterleave samples */
-    signed char* buf = (signed char*) pbtStream;
-    int iSamples = block_size / (2*2); // assumes 16bit 2ch
-    for (int i = 0; i < iSamples; i++)
+
+    int bytes_per_frame = channels * (bits_per_channel >> 3);
+    int frames = std::min(bytes_left / bytes_per_frame, OGG_BLOCK_FRAMES);
+
+    int16_t* buf = (int16_t*)pbtStream;
+    for (int i = 0; i < frames; i++)
     {
-      int j = i << 2; // j = i * (2*2)
-      buffer[0][i] = (((long)buf[j + 1] << 8) | (0x00ff & (int)buf[j])) / 32768.0f;
-      buffer[1][i] = (((long)buf[j + 3] << 8) | (0x00ff & (int)buf[j + 2])) / 32768.0f;
+      for (int j = 0; j < channels; j++)
+        buffer[j][i] = (*buf++) / 32768.0f;
     }
-    pbtStream += block_size;
+    pbtStream  += frames * bytes_per_frame;
+    bytes_left -= frames * bytes_per_frame;
 
     /* tell the library how much we actually submitted */
-    vorbis_analysis_wrote(&context->vorbisDspState, iSamples);
+    vorbis_analysis_wrote(&context->vorbisDspState, frames);
 
     /* vorbis does some data preanalysis, then divvies up blocks for
     more involved (potentially parallel) processing.  Get a single
@@ -300,8 +295,8 @@ int Encode(void *ctx, int nNumBytesRead, uint8_t* pbtStream)
     }
   }
 
-  // consumed everything
-  return nNumBytesRead;
+  // return bytes consumed
+  return nNumBytesRead - bytes_left;
 }
 
 bool Finish(void *ctx)
