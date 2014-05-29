@@ -18,9 +18,9 @@ include_directories(${XBMC_INCLUDE_DIR}
 
 set(VORBIS_SOURCES src/EncoderVorbis.cpp)
 
-set(DEPLIBS ${OGG_LIBRARIES}
-            ${VORBIS_LIBRARIES}
-            ${VORBISENC_LIBRARIES})
+set(DEPLIBS ${VORBIS_LIBRARIES}
+            ${VORBISENC_LIBRARIES}
+            ${OGG_LIBRARIES})
 
 build_addon(audioencoder.vorbis VORBIS DEPLIBS)
 
