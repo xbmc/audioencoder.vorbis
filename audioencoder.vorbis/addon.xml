@@ -13,7 +13,8 @@
     extension=".ogg"
     library_linux="audioencoder.vorbis.so"
     library_android="libaudioencoder.vorbis.so"
-    library_osx="audioencoder.vorbis.dylib"/>
+    library_osx="audioencoder.vorbis.dylib"
+    library_windx="audioencoder.vorbis.dll"/>
   <extension point="xbmc.addon.metadata">
     <summary lang="en">Vorbis Audio Encoder</summary>
     <description lang="en">Vorbis Audio Encoder</description>

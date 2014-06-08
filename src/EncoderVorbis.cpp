@@ -178,7 +178,7 @@ bool Start(void *ctx, int iInChannels, int iInRate, int iInBits,
   if (preset == -1)
     vorbis_encode_init(&context->vorbisInfo, iInChannels, iInRate, -1, bitrate*1000, -1);
   else
-    vorbis_encode_init_vbr(&context->vorbisInfo, iInChannels, iInRate, double(preset)/10.0);
+    vorbis_encode_init_vbr(&context->vorbisInfo, iInChannels, iInRate, float(preset)/10.0f);
 
   /* add a comment */
   vorbis_comment comm;
@@ -200,7 +200,7 @@ bool Start(void *ctx, int iInChannels, int iInRate, int iInBits,
   /* set up our packet->stream encoder */
   /* pick a random serial number; that way we can more likely build
   chained streams just by concatenation */
-  srand(time(NULL));
+  srand((unsigned int)time(NULL));
   ogg_stream_init(&context->oggStreamState, rand());
 
   /* write out the metadata */
