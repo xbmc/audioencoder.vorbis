@@ -6,12 +6,12 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR})
 
 enable_language(CXX)
 
-find_package(xbmc REQUIRED)
+find_package(kodi REQUIRED)
 find_package(Ogg REQUIRED)
 find_package(Vorbis REQUIRED)
 find_package(VorbisEnc REQUIRED)
 
-include_directories(${XBMC_INCLUDE_DIR}
+include_directories(${KODI_INCLUDE_DIR}
                     ${OGG_INCLUDE_DIRS}
                     ${VORBIS_INCLUDE_DIRS}
                     ${VORBISENC_INCLUDE_DIRS})
