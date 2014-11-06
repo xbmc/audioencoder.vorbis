@@ -8,6 +8,9 @@ externalproject_add(ogg
                     UPDATE_COMMAND ""
                     CONFIGURE_COMMAND <SOURCE_DIR>/configure 
                       --prefix=${OUTPUT_DIR}
+                      --enable-static
+                      --disable-shared
+                      "CFLAGS=-fPIC -DPIC -O2"
                     INSTALL_COMMAND ""
                     BUILD_IN_SOURCE 1)
                   

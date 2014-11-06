@@ -11,6 +11,9 @@ externalproject_add(vorbis
                       --disable-oggtest
                       --disable-docs
                       --disable-examples
+                      --enable-static
+                      --disable-shared
+                      "CFLAGS=-fPIC -DPIC -O2"
                     INSTALL_COMMAND ""
                     BUILD_IN_SOURCE 1)
                   
