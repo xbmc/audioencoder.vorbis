@@ -9,18 +9,26 @@ enable_language(CXX)
 find_package(kodi REQUIRED)
 find_package(Ogg REQUIRED)
 find_package(Vorbis REQUIRED)
-find_package(VorbisEnc REQUIRED)
+if(NOT WIN32)
+  find_package(VorbisEnc REQUIRED)
+endif()
 
-include_directories(${KODI_INCLUDE_DIR}
-                    ${OGG_INCLUDE_DIRS}
-                    ${VORBIS_INCLUDE_DIRS}
-                    ${VORBISENC_INCLUDE_DIRS})
+set(INCLUDE_DIRS ${KODI_INCLUDE_DIR}
+                 ${OGG_INCLUDE_DIRS}
+                 ${VORBIS_INCLUDE_DIRS})
+if(NOT WIN32)
+  list(APPEND INCLUDE_DIRS ${VORBISENC_INCLUDE_DIRS})
+endif()
+
+include_directories(${INCLUDE_DIRS})
 
 set(VORBIS_SOURCES src/EncoderVorbis.cpp)
 
-set(DEPLIBS ${VORBIS_LIBRARIES}
-            ${VORBISENC_LIBRARIES}
-            ${OGG_LIBRARIES})
+set(DEPLIBS ${OGG_LIBRARIES}
+            ${VORBIS_LIBRARIES})
+if(NOT WIN32)
+  list(APPEND DEPLIBS ${VORBISENC_LIBRARIES})
+endif()
 
 build_addon(audioencoder.vorbis VORBIS DEPLIBS)
 
