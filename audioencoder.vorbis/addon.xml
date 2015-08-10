@@ -11,13 +11,10 @@
   <extension
     point="xbmc.audioencoder"
     extension=".ogg"
-    library_linux="audioencoder.vorbis.so"
-    library_android="libaudioencoder.vorbis.so"
-    library_osx="audioencoder.vorbis.dylib"
-    library_windx="audioencoder.vorbis.dll"/>
+    library_@PLATFORM@="@LIBRARY_FILENAME@"/>
   <extension point="xbmc.addon.metadata">
     <summary lang="en">Vorbis Audio Encoder</summary>
     <description lang="en">Vorbis Audio Encoder</description>
-    <platform>all</platform>
+    <platform>@PLATFORM@</platform>
   </extension>
 </addon>
