@@ -1,0 +1,23 @@
+# build artifacts
+build/
+debian/changelog
+debian/files
+audioencoder.vorbis/addon.xml
+debian/kodi-audioencoder-vorbis-dbg.debhelper.log
+debian/kodi-audioencoder-vorbis-dbg.substvars
+debian/kodi-audioencoder-vorbis-dbg/
+debian/kodi-audioencoder-vorbis.debhelper.log
+debian/kodi-audioencoder-vorbis.postinst.debhelper
+debian/kodi-audioencoder-vorbis.postrm.debhelper
+debian/kodi-audioencoder-vorbis.substvars
+debian/kodi-audioencoder-vorbis/
+debian/tmp/
+obj-x86_64-linux-gnu/
+
+# clion
+.idea/
+
+# Eclipse/CDT
+.cproject
+.project
+.settings/
