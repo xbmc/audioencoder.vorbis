@@ -2,7 +2,7 @@ Source: kodi-audioencoder-vorbis
 Priority: extra
 Maintainer: Arne Morten Kvarving <spiff@xbmc.org>
 Build-Depends: debhelper (>= 8.0.0), cmake, kodi-addon-dev, kodi-audio-dev, make, libtool, libvorbis-dev
-Standards-Version: 3.9.2
+Standards-Version: 3.9.6
 Section: libs
 Homepage: http://kodi.org
 
