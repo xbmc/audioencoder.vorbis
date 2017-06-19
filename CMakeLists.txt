@@ -13,7 +13,7 @@ if(NOT WIN32)
   find_package(VorbisEnc REQUIRED)
 endif()
 
-set(INCLUDE_DIRS ${KODI_INCLUDE_DIR}
+set(INCLUDE_DIRS ${KODI_INCLUDE_DIR}/.. # Hack way with "/..", need bigger Kodi cmake rework to match right include ways (becomes done in future)
                  ${OGG_INCLUDE_DIRS}
                  ${VORBIS_INCLUDE_DIRS})
 if(NOT WIN32)
