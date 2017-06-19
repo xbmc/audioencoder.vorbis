@@ -6,7 +6,7 @@
   provider-name="spiff">
   <requires>@ADDON_DEPENDS@</requires>
   <extension
-    point="xbmc.audioencoder"
+    point="kodi.audioencoder"
     extension=".ogg"
     library_@PLATFORM@="@LIBRARY_FILENAME@"/>
   <extension point="xbmc.addon.metadata">
