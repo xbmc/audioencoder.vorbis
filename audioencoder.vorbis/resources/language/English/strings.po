@@ -35,3 +35,7 @@ msgstr ""
 msgctxt "#30005"
 msgid "Bitrate"
 msgstr ""
+
+msgctxt "#30006"
+msgid "{0:d} kHz"
+msgstr ""
