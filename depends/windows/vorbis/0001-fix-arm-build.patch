@@ -1,0 +1,25 @@
+From 6d0e1df4ed1db1104bc76fce8f1579150dc8812c Mon Sep 17 00:00:00 2001
+From: Anton Fedchin <anightik@gmail.com>
+Date: Mon, 23 Oct 2017 09:15:11 +0300
+Subject: [PATCH] fix arm build
+
+---
+ lib/os.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/lib/os.h b/lib/os.h
+index 276b4de..b7d6175 100644
+--- a/lib/os.h
++++ b/lib/os.h
+@@ -120,7 +120,7 @@ static inline int vorbis_ftoi(double f){  /* yes, double!  Otherwise,
+ 
+ /* MSVC inline assembly. 32 bit only; inline ASM isn't implemented in the
+  * 64 bit compiler */
+-#if defined(_MSC_VER) && !defined(_WIN64) && !defined(_WIN32_WCE)
++#if defined(_MSC_VER) && !defined(_WIN64) && !defined(_M_ARM) && !defined(_WIN32_WCE)
+ #  define VORBIS_FPU_CONTROL
+ 
+ typedef ogg_int16_t vorbis_fpu_control;
+-- 
+2.10.2.windows.1
+
