@@ -3,10 +3,6 @@ language: cpp
 #
 # Define the build matrix
 #
-# Travis defaults to building on Ubuntu Precise when building on 
-# Linux. We need Trusty in order to get up to date versions of 
-# cmake and g++.
-#
 env:
   global:
     - APPID=audioencoder.vorbis
@@ -14,11 +10,11 @@ env:
 matrix:
   include:
     - os: linux
-      dist: trusty    
+      dist: xenial
       sudo: required
       compiler: gcc
     - os: linux
-      dist: trusty    
+      dist: xenial
       sudo: required
       compiler: clang
     - os: osx
