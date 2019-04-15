@@ -14,7 +14,7 @@ Add-on releases are also tagged regularly.
 
 ### Linux
 
-1. `git clone https://github.com/xbmc/xbmc.git`
+1. `git clone --branch Leia https://github.com/xbmc/xbmc.git`
 2. `git clone https://github.com/audioencoder.vorbis/audioencoder.vorbis.git`
 3. `cd audioencoder.vorbis && mkdir build && cd build`
 4. `cmake -DADDONS_TO_BUILD=audioencoder.vorbis -DADDON_SRC_PREFIX=../.. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=../../xbmc/addons -DPACKAGE_ZIP=1 ../../xbmc/project/cmake/addons`
