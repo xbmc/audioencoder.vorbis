@@ -7,16 +7,15 @@
 
 find_package(PkgConfig)
 if(PKG_CONFIG_FOUND)
-  pkg_check_modules (VORBIS vorbis)
-  list(APPEND VORBIS_INCLUDE_DIRS ${VORBIS_INCLUDEDIR})
+  pkg_check_modules(PC_VORBIS vorbis QUIET)
 endif()
 
-if(NOT VORBIS_FOUND)
-  find_path(VORBIS_INCLUDE_DIRS vorbis/vorbisenc.h)
-  find_library(VORBIS_LIBRARIES vorbis)
-endif()
+find_path(VORBIS_INCLUDE_DIRS vorbis/vorbisenc.h
+                              PATHS ${PC_VORBIS_INCLUDEDIR})
+find_library(VORBIS_LIBRARIES vorbis
+                              PATHS ${PC_VORBIS_LIBDIR})
 
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(Vorbis DEFAULT_MSG VORBIS_INCLUDE_DIRS VORBIS_LIBRARIES)
+find_package_handle_standard_args(Vorbis REQUIRED_VARS VORBIS_INCLUDE_DIRS VORBIS_LIBRARIES)
 
 mark_as_advanced(VORBIS_INCLUDE_DIRS VORBIS_LIBRARIES)

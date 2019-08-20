@@ -1,6 +1,5 @@
+cmake_minimum_required(VERSION 3.5)
 project(vorbis)
-
-cmake_minimum_required(VERSION 2.8)
 
 include(ExternalProject)
 externalproject_add(vorbis
@@ -13,7 +12,7 @@ externalproject_add(vorbis
                       --disable-examples
                       --enable-static
                       --disable-shared
-                      "CFLAGS=-fPIC -DPIC -O2"
+                      --with-pic
                     INSTALL_COMMAND ""
                     BUILD_IN_SOURCE 1)
                   
