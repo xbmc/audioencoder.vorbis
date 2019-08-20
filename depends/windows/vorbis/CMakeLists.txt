@@ -1,6 +1,5 @@
+cmake_minimum_required(VERSION 3.5)
 project(vorbis)
-
-cmake_minimum_required(VERSION 2.8)
 
 add_definitions(-DWIN32 -D_WINDOWS -D_USRDLL -DLIBVORBIS_EXPORTS)
 
