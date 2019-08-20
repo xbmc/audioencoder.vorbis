@@ -12,7 +12,7 @@ externalproject_add(vorbis
                       --disable-examples
                       --enable-static
                       --disable-shared
-                      "CFLAGS=-fPIC -DPIC -O2"
+                      --with-pic
                     INSTALL_COMMAND ""
                     BUILD_IN_SOURCE 1)
                   
