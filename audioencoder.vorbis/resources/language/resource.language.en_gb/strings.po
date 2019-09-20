@@ -17,25 +17,33 @@ msgid "Preset"
 msgstr ""
 
 msgctxt "#30001"
-msgid "Medium"
+msgid "Enables some preconfigured settings"
 msgstr ""
 
 msgctxt "#30002"
-msgid "Standard"
+msgid "Medium"
 msgstr ""
 
 msgctxt "#30003"
-msgid "Extreme"
+msgid "Standard"
 msgstr ""
 
 msgctxt "#30004"
-msgid "Average bitrate"
+msgid "Extreme"
 msgstr ""
 
 msgctxt "#30005"
-msgid "Bitrate"
+msgid "Constant bitrate"
 msgstr ""
 
 msgctxt "#30006"
+msgid "Bitrate"
+msgstr ""
+
+msgctxt "#30007"
+msgid "The bitrate to be used"
+msgstr ""
+
+msgctxt "#30008"
 msgid "{0:d} kHz"
 msgstr ""
