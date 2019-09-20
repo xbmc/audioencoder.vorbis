@@ -28,7 +28,7 @@
 
 static const int OGG_BLOCK_FRAMES = 1024; // number of frames to encode at a time
 
-class CEncoderVorbis : public kodi::addon::CInstanceAudioEncoder
+class ATTRIBUTE_HIDDEN CEncoderVorbis : public kodi::addon::CInstanceAudioEncoder
 {
 public:
   CEncoderVorbis(KODI_HANDLE instance);
@@ -268,7 +268,7 @@ bool CEncoderVorbis::Finish()
 
 //------------------------------------------------------------------------------
 
-class CMyAddon : public kodi::addon::CAddonBase
+class ATTRIBUTE_HIDDEN CMyAddon : public kodi::addon::CAddonBase
 {
 public:
   CMyAddon() = default;
