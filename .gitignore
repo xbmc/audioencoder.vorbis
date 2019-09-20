@@ -1,23 +1,42 @@
 # build artifacts
 build/
+audioencoder.*/addon.xml
+
+# Debian build files
 debian/changelog
 debian/files
-audioencoder.vorbis/addon.xml
-debian/kodi-audioencoder-vorbis-dbg.debhelper.log
-debian/kodi-audioencoder-vorbis-dbg.substvars
-debian/kodi-audioencoder-vorbis-dbg/
-debian/kodi-audioencoder-vorbis.debhelper.log
-debian/kodi-audioencoder-vorbis.postinst.debhelper
-debian/kodi-audioencoder-vorbis.postrm.debhelper
-debian/kodi-audioencoder-vorbis.substvars
-debian/kodi-audioencoder-vorbis/
+debian/*.log
+debian/*.substvars
+debian/.debhelper/
 debian/tmp/
+debian/kodi-audioencoder-*/
 obj-x86_64-linux-gnu/
+
+# commonly used editors
+# vim
+*.swp
+
+# Eclipse
+*.project
+*.cproject
+.classpath
+*.sublime-*
+.settings/
+
+# KDevelop 4
+*.kdev4
+
+# gedit
+*~
+
+# CLion
+/.idea
 
 # clion
 .idea/
 
-# Eclipse/CDT
-.cproject
-.project
-.settings/
+# to prevent add after a "git format-patch VALUE" and "git add ." call
+/*.patch
+
+# to prevent add if project code opened by Visual Studio over CMake file
+.vs/
