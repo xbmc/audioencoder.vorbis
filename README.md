@@ -4,6 +4,7 @@ This is a [Kodi] (http://kodi.tv) Vorbis audio encoder add-on.
 
 #### CI Testing
 [![Build Status](https://travis-ci.org/xbmc/audioencoder.vorbis.svg?branch=master)](https://travis-ci.org/xbmc/audioencoder.vorbis)
+[![Build Status](https://dev.azure.com/teamkodi/binary-addons/_apis/build/status/xbmc.audioencoder.vorbis?branchName=Leia)](https://dev.azure.com/teamkodi/binary-addons/_build/latest?definitionId=23&branchName=Leia)
 [![Coverity Scan Build Status](https://scan.coverity.com/projects/5120/badge.svg)](https://scan.coverity.com/projects/5120)
 
 ## Build instructions
