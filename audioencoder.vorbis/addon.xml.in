@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <addon
   id="audioencoder.vorbis"
-  version="2.0.3"
+  version="2.0.4"
   name="Vorbis Audio Encoder"
   provider-name="spiff">
   <requires>@ADDON_DEPENDS@</requires>
@@ -13,5 +13,10 @@
     <summary lang="en">Vorbis audio compression</summary>
     <description lang="en">Vorbis is a general purpose perceptual audio CODEC intended to allow maximum encoder flexibility, thus allowing it to scale competitively over an exceptionally wide range of bitrates.</description>
     <platform>@PLATFORM@</platform>
+    <license>GPL-2.0</license>
+    <source>https://github.com/xbmc/audioencoder.vorbis</source>
+    <assets>
+      <icon>icon.png</icon>
+    </assets>
   </extension>
 </addon>
