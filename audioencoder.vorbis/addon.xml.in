@@ -10,8 +10,8 @@
     extension=".ogg"
     library_@PLATFORM@="@LIBRARY_FILENAME@"/>
   <extension point="xbmc.addon.metadata">
-    <summary lang="en">Vorbis audio compression</summary>
-    <description lang="en">Vorbis is a general purpose perceptual audio CODEC intended to allow maximum encoder flexibility, thus allowing it to scale competitively over an exceptionally wide range of bitrates.</description>
+    <summary lang="en_GB">Vorbis audio compression</summary>
+    <description lang="en_GB">Vorbis is a general purpose perceptual audio CODEC intended to allow maximum encoder flexibility, thus allowing it to scale competitively over an exceptionally wide range of bitrates.</description>
     <platform>@PLATFORM@</platform>
     <license>GPL-2.0-or-later</license>
     <source>https://github.com/xbmc/audioencoder.vorbis</source>
