@@ -18,7 +18,7 @@ static const int OGG_BLOCK_FRAMES = 1024; // number of frames to encode at a tim
 class ATTRIBUTE_HIDDEN CEncoderVorbis : public kodi::addon::CInstanceAudioEncoder
 {
 public:
-  CEncoderVorbis(KODI_HANDLE instance);
+  CEncoderVorbis(KODI_HANDLE instance, const std::string& version);
   ~CEncoderVorbis() override;
 
   bool Start(int inChannels,
@@ -49,8 +49,8 @@ private:
   int                m_bitrate;
 };
 
-CEncoderVorbis::CEncoderVorbis(KODI_HANDLE instance)
-  : CInstanceAudioEncoder(instance),
+CEncoderVorbis::CEncoderVorbis(KODI_HANDLE instance, const std::string& version)
+  : CInstanceAudioEncoder(instance, version),
     m_inited(false),
     m_preset(-1)
 {
@@ -259,12 +259,12 @@ class ATTRIBUTE_HIDDEN CMyAddon : public kodi::addon::CAddonBase
 {
 public:
   CMyAddon() = default;
-  ADDON_STATUS CreateInstance(int instanceType, std::string instanceID, KODI_HANDLE instance, KODI_HANDLE& addonInstance) override;
+  ADDON_STATUS CreateInstance(int instanceType, const std::string& instanceID, KODI_HANDLE instance, const std::string& version, KODI_HANDLE& addonInstance) override;
 };
 
-ADDON_STATUS CMyAddon::CreateInstance(int instanceType, std::string instanceID, KODI_HANDLE instance, KODI_HANDLE& addonInstance)
+ADDON_STATUS CMyAddon::CreateInstance(int instanceType, const std::string& instanceID, KODI_HANDLE instance, const std::string& version, KODI_HANDLE& addonInstance)
 {
-  addonInstance = new CEncoderVorbis(instance);
+  addonInstance = new CEncoderVorbis(instance, version);
   return ADDON_STATUS_OK;
 }
 
