@@ -5,13 +5,13 @@
  *  See LICENSE.md for more information.
  */
 
-#include <ogg/ogg.h>
-#include <vorbis/vorbisenc.h>
-#include <kodi/addon-instance/AudioEncoder.h>
-#include <string.h>
-#include <stdlib.h>
-#include <time.h>
 #include <algorithm>
+#include <kodi/addon-instance/AudioEncoder.h>
+#include <ogg/ogg.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+#include <vorbis/vorbisenc.h>
 
 static const int OGG_BLOCK_FRAMES = 1024; // number of frames to encode at a time
 
@@ -37,22 +37,20 @@ public:
   bool Finish() override;
 
 private:
-  vorbis_info        m_vorbisInfo;             ///< struct that stores all the static vorbis bitstream settings
-  vorbis_dsp_state   m_vorbisDspState;         ///< central working state for the packet->PCM decoder
-  vorbis_block       m_vorbisBlock;            ///< local working space for packet->PCM decode
+  vorbis_info m_vorbisInfo; ///< struct that stores all the static vorbis bitstream settings
+  vorbis_dsp_state m_vorbisDspState; ///< central working state for the packet->PCM decoder
+  vorbis_block m_vorbisBlock; ///< local working space for packet->PCM decode
 
-  ogg_stream_state   m_oggStreamState;         ///< take physical pages, weld into a logical stream of packets
+  ogg_stream_state m_oggStreamState; ///< take physical pages, weld into a logical stream of packets
 
-  bool               m_inited;                 ///< whether Init() was successful
+  bool m_inited; ///< whether Init() was successful
 
-  int                m_preset;
-  int                m_bitrate;
+  int m_preset;
+  int m_bitrate;
 };
 
 CEncoderVorbis::CEncoderVorbis(KODI_HANDLE instance, const std::string& version)
-  : CInstanceAudioEncoder(instance, version),
-    m_inited(false),
-    m_preset(-1)
+  : CInstanceAudioEncoder(instance, version), m_inited(false), m_preset(-1)
 {
   // create encoder context
   vorbis_info_init(&m_vorbisInfo);
@@ -80,11 +78,18 @@ CEncoderVorbis::~CEncoderVorbis()
   vorbis_info_clear(&m_vorbisInfo);
 }
 
-bool CEncoderVorbis::Start(int inChannels, int inRate, int inBits,
-                           const std::string& title, const std::string& artist,
-                           const std::string& albumartist, const std::string& album,
-                           const std::string& year, const std::string& track, const std::string& genre,
-                           const std::string& comment, int trackLength)
+bool CEncoderVorbis::Start(int inChannels,
+                           int inRate,
+                           int inBits,
+                           const std::string& title,
+                           const std::string& artist,
+                           const std::string& albumartist,
+                           const std::string& album,
+                           const std::string& year,
+                           const std::string& track,
+                           const std::string& genre,
+                           const std::string& comment,
+                           int trackLength)
 {
   // we accept only 2 ch 16 bit atm
   if (inChannels != 2 || inBits != 16)
@@ -94,9 +99,9 @@ bool CEncoderVorbis::Start(int inChannels, int inRate, int inBits,
   }
 
   if (m_preset == -1)
-    vorbis_encode_init(&m_vorbisInfo, inChannels, inRate, -1, m_bitrate*1000, -1);
+    vorbis_encode_init(&m_vorbisInfo, inChannels, inRate, -1, m_bitrate * 1000, -1);
   else
-    vorbis_encode_init_vbr(&m_vorbisInfo, inChannels, inRate, float(m_preset)/10.0f);
+    vorbis_encode_init_vbr(&m_vorbisInfo, inChannels, inRate, float(m_preset) / 10.0f);
 
   /* add a comment */
   vorbis_comment comm;
@@ -125,10 +130,9 @@ bool CEncoderVorbis::Start(int inChannels, int inRate, int inBits,
   ogg_packet header;
   ogg_packet header_comm;
   ogg_packet header_code;
-  ogg_page   page;
+  ogg_page page;
 
-  vorbis_analysis_headerout(&m_vorbisDspState, &comm,
-                            &header, &header_comm, &header_code);
+  vorbis_analysis_headerout(&m_vorbisDspState, &comm, &header, &header_comm, &header_code);
 
   ogg_stream_packetin(&m_oggStreamState, &header);
   ogg_stream_packetin(&m_oggStreamState, &header_comm);
@@ -161,7 +165,7 @@ int CEncoderVorbis::Encode(int numBytesRead, const uint8_t* stream)
     const int channels = 2;
     const int bits_per_channel = 16;
 
-    float **buffer = vorbis_analysis_buffer(&m_vorbisDspState, OGG_BLOCK_FRAMES);
+    float** buffer = vorbis_analysis_buffer(&m_vorbisDspState, OGG_BLOCK_FRAMES);
 
     /* uninterleave samples */
 
@@ -207,7 +211,8 @@ int CEncoderVorbis::Encode(int numBytesRead, const uint8_t* stream)
 
           /* this could be set above, but for illustrative purposes, I do
           it here (to show that vorbis does know where the stream ends) */
-          if (ogg_page_eos(&page)) eos = 1;
+          if (ogg_page_eos(&page))
+            eos = 1;
         }
       }
     }
@@ -229,7 +234,7 @@ bool CEncoderVorbis::Finish()
     vorbis_bitrate_addblock(&m_vorbisBlock);
 
     ogg_packet packet;
-    ogg_page   page;
+    ogg_page page;
     while (vorbis_bitrate_flushpacket(&m_vorbisDspState, &packet))
     {
       /* weld the packet into the bitstream */
@@ -246,7 +251,8 @@ bool CEncoderVorbis::Finish()
 
         /* this could be set above, but for illustrative purposes, I do
         it here (to show that vorbis does know where the stream ends) */
-        if (ogg_page_eos(&page)) eos = 1;
+        if (ogg_page_eos(&page))
+          eos = 1;
       }
     }
   }
@@ -259,10 +265,18 @@ class ATTRIBUTE_HIDDEN CMyAddon : public kodi::addon::CAddonBase
 {
 public:
   CMyAddon() = default;
-  ADDON_STATUS CreateInstance(int instanceType, const std::string& instanceID, KODI_HANDLE instance, const std::string& version, KODI_HANDLE& addonInstance) override;
+  ADDON_STATUS CreateInstance(int instanceType,
+                              const std::string& instanceID,
+                              KODI_HANDLE instance,
+                              const std::string& version,
+                              KODI_HANDLE& addonInstance) override;
 };
 
-ADDON_STATUS CMyAddon::CreateInstance(int instanceType, const std::string& instanceID, KODI_HANDLE instance, const std::string& version, KODI_HANDLE& addonInstance)
+ADDON_STATUS CMyAddon::CreateInstance(int instanceType,
+                                      const std::string& instanceID,
+                                      KODI_HANDLE instance,
+                                      const std::string& version,
+                                      KODI_HANDLE& addonInstance)
 {
   addonInstance = new CEncoderVorbis(instance, version);
   return ADDON_STATUS_OK;
