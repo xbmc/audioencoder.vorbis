@@ -1,1 +1,1 @@
-vorbis https://github.com/xiph/vorbis/archive/v1.3.6.tar.gz
+vorbis https://github.com/xiph/vorbis/archive/v1.3.7.tar.gz
