@@ -1,0 +1,30 @@
+diff -ur libvorbis-1.3.2-orig/configure libvorbis-1.3.2/configure
+--- libvorbis-1.3.2-orig/configure	2010-11-01 20:30:14.000000000 +0100
++++ libvorbis-1.3.2/configure	2018-03-08 16:16:02.847210383 +0100
+@@ -11791,9 +11791,9 @@
+ 	case $host in
+ 	*86-*-linux*)
+ 		DEBUG="-g -Wall -Wextra -D_REENTRANT -D__NO_MATH_INLINES -fsigned-char"
+-		CFLAGS="-O20 -ffast-math -mno-ieee-fp -D_REENTRANT -fsigned-char"
++		CFLAGS="-O20 -ffast-math -D_REENTRANT -fsigned-char"
+ #              	PROFILE="-Wall -Wextra -pg -g -O20 -ffast-math -D_REENTRANT -fsigned-char -fno-inline -static"
+-		PROFILE="-Wall -Wextra -pg -g -O20 -ffast-math -mno-ieee-fp -D_REENTRANT -fsigned-char -fno-inline"
++		PROFILE="-Wall -Wextra -pg -g -O20 -ffast-math -D_REENTRANT -fsigned-char -fno-inline"
+ 
+ 		# glibc < 2.1.3 has a serious FP bug in the math inline header
+ 		# that will cripple Vorbis.  Look to see if the magic FP stack
+diff -ur libvorbis-1.3.2-orig/configure.ac libvorbis-1.3.2/configure.ac
+--- libvorbis-1.3.2-orig/configure.ac	2010-11-01 20:27:12.000000000 +0100
++++ libvorbis-1.3.2/configure.ac	2018-03-08 15:22:03.388346372 +0100
+@@ -129,9 +129,9 @@
+ 	case $host in 
+ 	*86-*-linux*)
+ 		DEBUG="-g -Wall -Wextra -D_REENTRANT -D__NO_MATH_INLINES -fsigned-char"
+-		CFLAGS="-O20 -ffast-math -mno-ieee-fp -D_REENTRANT -fsigned-char"
++		CFLAGS="-O20 -ffast-math -D_REENTRANT -fsigned-char"
+ #              	PROFILE="-Wall -Wextra -pg -g -O20 -ffast-math -D_REENTRANT -fsigned-char -fno-inline -static"
+-		PROFILE="-Wall -Wextra -pg -g -O20 -ffast-math -mno-ieee-fp -D_REENTRANT -fsigned-char -fno-inline"
++		PROFILE="-Wall -Wextra -pg -g -O20 -ffast-math -D_REENTRANT -fsigned-char -fno-inline"
+ 
+ 		# glibc < 2.1.3 has a serious FP bug in the math inline header
+ 		# that will cripple Vorbis.  Look to see if the magic FP stack
