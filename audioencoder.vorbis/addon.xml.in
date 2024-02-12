@@ -21,6 +21,7 @@
     <summary lang="de_DE">Vorbis-Audiokomprimierung</summary>
     <summary lang="en_GB">Vorbis audio compression</summary>
     <summary lang="es_ES">Compresión de audio Vorbis</summary>
+    <summary lang="et_EE">Vorbis helikompressioon</summary>
     <summary lang="fi_FI">Äänen Vorbis-pakkaus</summary>
     <summary lang="fr_FR">Compression audio Vorbis</summary>
     <summary lang="hr_HR">Vorbis zvučna kompresija</summary>
@@ -34,7 +35,7 @@
     <description lang="da_DK">Vorbis er et perceptuelt lydcodec til generel anvendelse beregnet til at tillade maksimal indkoderfleksibilitet, hvilket gør det muligt at skalere konkurrencedygtigt over en usædvanligt bred vifte af bitrates.</description>
     <description lang="de_DE">Vorbis ist ein Allzweck-Audio-Codec, der hohe Encoderflexibilität bringen soll und somit eine wettbewerbsfähige Skalierung über einen außergewöhnlich großen Bereich von Bitraten ermöglicht.</description>
     <description lang="en_GB">Vorbis is a general purpose perceptual audio CODEC intended to allow maximum encoder flexibility, thus allowing it to scale competitively over an exceptionally wide range of bitrates.</description>
-    <description lang="es_ES">Vorbis es un CODEC de audio perceptual de propósito general que permite la máxima flexibilidad de codificación a la vez que escala competitivamente en un excepcionalmente amplio abanico de tasas de bits.</description>
+    <description lang="es_ES">Vorbis es un CODEC de audio perceptivo de uso general destinado a permitir la máxima flexibilidad del codificador, lo que le permite escalar de manera competitiva en una gama excepcionalmente amplia de tasas de bits.</description>
     <description lang="fi_FI">Vorbis on yleiskäyttöinen havainnollisen äänen koodekki, jonka tarkoitus on tarjoa mahdollisimman joustavaa enkoodausta mahdollistaen kilpailukykyisen skaalautuvuuden poikkeuksellisen laajalla bittinopeusalueella.</description>
     <description lang="fr_FR">Vorbis est un CODEC audio perceptif à usage général destiné à permettre une flexibilité maximale de l&apos;encodeur, lui permettant ainsi d&apos;évoluer de manière compétitive sur une gamme exceptionnellement large de débits binaires.</description>
     <description lang="hr_HR">Vorbis perceptualni zvučni kôdek opće namjene namijenjen da dopušta najveću enkôdersku fleksibilnost, čime mu omogućuje konkurentno skaliranje putem iznimne širine brzine prijenosa.</description>
