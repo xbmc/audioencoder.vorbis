@@ -31,6 +31,7 @@
     <summary lang="pl_PL">Kompresja dźwięku Vorbis</summary>
     <summary lang="pt_BR">Compressão de áudio Vorbis</summary>
     <summary lang="ru_RU">Сжатие аудиофайлов Vorbis</summary>
+    <summary lang="sv_SE">Vorbis-ljudkomprimering</summary>
     <summary lang="zh_CN">Vorbis 音频压缩</summary>
     <description lang="ca_ES">Vorbis és un CODEC d&apos;àudio perceptiu de propòsit general destinat a permetre la màxima flexibilitat del codificador, cosa que li permet escalar de manera competitiva en una gamma excepcionalment àmplia de taxes de bits.</description>
     <description lang="da_DK">Vorbis er et perceptuelt lydcodec til generel anvendelse beregnet til at tillade maksimal indkoderfleksibilitet, hvilket gør det muligt at skalere konkurrencedygtigt over en usædvanligt bred vifte af bitrates.</description>
@@ -47,6 +48,7 @@
     <description lang="pl_PL">Vorbis to kodek percepcyjny audio ogólnego przeznaczenia, którego celem jest zapewnienie maksymalnej elastyczności kodera, co pozwala na konkurencyjne skalowanie w wyjątkowo szerokim zakresie przepływności.</description>
     <description lang="pt_BR">Vorbis é um CODEC de áudio perceptivo de uso geral destinado a permitir a máxima flexibilidade do codificador, permitindo-lhe escalar competitivamente em uma faixa excepcionalmente ampla de taxas de bits.</description>
     <description lang="ru_RU">Vorbis - это аудиокодек общего назначения, предназначенный для обеспечения максимальной гибкости кодера, что позволяет ему быть достаточно эффективным в очень широком диапазоне битрейтов.</description>
+    <description lang="sv_SE">Vorbis är en KODEK för perceptuellt ljud för allmänt bruk som är avsedd att ge maximal flexibilitet för kodaren, vilket gör det möjligt att skala konkurrenskraftigt över ett exceptionellt brett spektrum av bithastigheter.</description>
     <description lang="zh_CN">Vorbis 是一种通用感知音频编解码器，旨在实现编码器的最大灵活性，从而使其能够在极宽的比特率范围内进行竞争性扩展。</description>
   </extension>
 </addon>
